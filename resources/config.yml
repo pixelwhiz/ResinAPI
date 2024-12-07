@@ -1,0 +1,31 @@
+# default-lang: Set default language
+# language list: en, id
+default-lang: en
+
+# provider: Set user-provider type of database
+# provider list: yaml, json, sqlite, mysql
+provider: yaml
+
+# check-update: When set to true, update notification will be displayed when server started
+check-update: true
+
+# default-resin: Set the default money when player first joined the server.
+default-resin: 200
+
+# max-resin: Set maximum resin that player can have
+max-resin: 200
+
+# interval-to-update: Set default minute when updating resin
+# for example resin will update every 8 minutes
+interval-to-update: 8
+
+database:
+  mysql:
+    host: 127.0.0.1
+    username: username
+    password: password
+    schema: db_name
+    port: 3306
+
+  sqlite:
+    path: players.db

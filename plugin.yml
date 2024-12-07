@@ -1,0 +1,19 @@
+---
+name: ResinAPI
+version: 1.0.0
+main: pixelwhiz\resinapi\Loader
+api: 5.0.0
+author: pixelwhiz
+src-namespace-prefix: pixelwhiz\resinapi
+
+permissions:
+  resinapi.command:
+    description: Allows executing resin commands.
+    default: true
+  resinapi.command.help:
+    description: Allows executing the give command in resin.
+    default: op
+  resinapi.command.give:
+    description: Allows giving a resin to another user.
+    default: op
+...
