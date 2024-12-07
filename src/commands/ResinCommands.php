@@ -2,7 +2,6 @@
 
 namespace pixelwhiz\resinapi\commands;
 
-use pixelwhiz\resinapi\language\ResinLang;
 use pixelwhiz\resinapi\ResinAPI;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;

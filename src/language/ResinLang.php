@@ -9,7 +9,7 @@ use pocketmine\lang\Language;
 
 use pocketmine\lang\Translatable;
 use pocketmine\utils\Config;
-use SplFileInfo;
+
 use InvalidArgumentException;
 
 class ResinLang extends Language {
@@ -29,6 +29,11 @@ class ResinLang extends Language {
         }
 
         parent::__construct($language, $languagePath, "en-US");
+    }
+
+
+    public function translateToString(string $message): string {
+        return $this->translate(new Translatable($message));
     }
 
 }

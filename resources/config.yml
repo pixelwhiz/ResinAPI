@@ -1,5 +1,5 @@
-# default-lang: Set default languages
-# languages list: en, id
+# default-language: Set default language
+# language list: en, id
 default-lang: en-US
 
 # provider: Set user-provider type of database

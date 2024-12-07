@@ -12,7 +12,6 @@ use pixelwhiz\resinapi\provider\MySqlDataProvider;
 use pixelwhiz\resinapi\provider\SqliteDataProvider;
 use pixelwhiz\resinapi\provider\YamlDataProvider;
 use pixelwhiz\resinapi\task\ResinUpdateTask;
-use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
@@ -32,9 +31,15 @@ class ResinAPI extends PluginBase {
     protected function onLoad(): void
     {
         self::$instance = $this;
+
+        $this->config = new Config($this->getDataFolder(). "config.yml", Config::YAML);
+
         $this->saveResource("config.yml");
         $this->saveResource("languages/en-US.ini");
-        $this->config = new Config($this->getDataFolder(). "config.yml", Config::YAML);
+        $this->initDatabase();
+        $this->checkUpdate();
+        $this->language = new ResinLang($this);
+
     }
 
     public static function getInstance(): self {
@@ -43,13 +48,10 @@ class ResinAPI extends PluginBase {
 
     protected function onEnable(): void
     {
-        $this->initDatabase();
-        $this->checkUpdate();
-        $this->language = new ResinLang($this);
         Server::getInstance()->getPluginManager()->registerEvents(new EventListener($this), $this);
         Server::getInstance()->getCommandMap()->register("resin", new ResinCommands($this));
         $this->getScheduler()->scheduleRepeatingTask(new ResinUpdateTask($this->config, $this->provider), 20);
-        $this->getLogger()->info($this->language->translate(new Translatable("command.resin.description")));
+        $this->getLogger()->info($this->language->translateToString("command.resin.description"));
     }
 
     public function checkUpdate(): void {}
@@ -67,7 +69,7 @@ class ResinAPI extends PluginBase {
     }
 
     public function initLanguage(): void {
-        $language = $this->config->get("default-lang");
+        $language = $this->config->get("default-language");
 
     }
 
