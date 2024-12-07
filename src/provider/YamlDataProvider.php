@@ -9,16 +9,35 @@ use pocketmine\utils\Config;
 
 class YamlDataProvider implements Provider {
 
-    public Config $data;
+    private Config $data;
+    private ResinAPI $plugin;
 
     public function __construct(ResinAPI $plugin) {
         $this->plugin = $plugin;
-        $this->data = new Config(ResinAPI::getInstance()->getDataFolder(). "database/data.yml", Config::YAML);
+        $dataPath = $plugin->getDataFolder() . "database/data.yml";
+
+        if (!is_dir(dirname($dataPath))) {
+            mkdir(dirname($dataPath), 0777, true);
+        }
+
+        $this->data = new Config($dataPath, Config::YAML);
     }
 
     public function getDefaultResin(): int {
         return $this->data->get("default-resin");
     }
+
+    public function accountExists(Player $player): bool
+    {
+        // TODO: Implement accountExists() method.
+    }
+
+    public function createAccount(Player $player, int $defaultResin): void
+    {
+        // TODO: Implement createAccount() method.
+    }
+
+
 
     public function getResin(Player $player, int $resinType): int
     {

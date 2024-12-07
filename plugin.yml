@@ -1,13 +1,13 @@
 ---
 name: ResinAPI
 version: 1.0.0
-main: pixelwhiz\resinapi\Loader
+main: pixelwhiz\resinapi\ResinAPI
 api: 5.0.0
 author: pixelwhiz
 src-namespace-prefix: pixelwhiz\resinapi
 
 permissions:
-  resinapi.command:
+  resinapi.commands:
     description: Allows executing resin commands.
     default: true
   resinapi.command.help:

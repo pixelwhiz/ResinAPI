@@ -1,6 +1,6 @@
-# default-lang: Set default language
-# language list: en, id
-default-lang: en
+# default-lang: Set default languages
+# languages list: en, id
+default-lang: en-US
 
 # provider: Set user-provider type of database
 # provider list: yaml, json, sqlite, mysql

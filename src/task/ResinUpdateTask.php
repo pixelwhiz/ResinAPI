@@ -14,6 +14,10 @@ class ResinUpdateTask extends Task {
 
     public int $updateTime;
 
+
+    private Config $config;
+    private Provider $provider;
+
     public function __construct(Config $config, Provider $provider) {
         $this->config = $config;
         $this->provider = $provider;
