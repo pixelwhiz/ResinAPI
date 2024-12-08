@@ -40,34 +40,29 @@ class ResinCommands extends Command {
                 }
 
             case "check":
-
                 $this->setPermission("resinapi.command.check");
                 if (!$this->testPermission($sender)) {
                     return false;
                 }
 
-                if (!$sender instanceof Player and !isset($args[1])) {
-                    $sender->sendMessage("Usage: /resin check {player}");
-                    return false;
+                if (!isset($args[1])) {
+                    $player = $sender;
                 }
 
-                if (isset($args[1])) {
-                    $player = $this->plugin->getServer()->getOfflinePlayer($args[1]);
-                    if ($player === null) {
-                        $sender->sendMessage($this->language->translateToString("command.resin.player-not-found"));
-                        return false;
-                    }
-                }
-
-                $amount = $this->provider->getResin($player, ResinTypes::OIRIGINAL_RESIN);
-
-                $sender->sendMessage($this->language->translateToString("command.resin.description",
+                $originalResin = ResinAPI::getInstance()->getAllResin($player)[ResinTypes::ORIGINAL_RESIN];
+                $condensedResin = ResinAPI::getInstance()->getAllResin($player)[ResinTypes::CONDENSED_RESIN];
+                $fragileResin = ResinAPI::getInstance()->getAllResin($player)[ResinTypes::FRAGILE_RESIN];
+                $message = $this->language->translateToString("command.resin.description",
                     [
                         TranslationKeys::PLAYER => $player->getName(),
-                        TranslationKeys::AMOUNT => $amount
+                        TranslationKeys::ORIGINAL_RESIN_AMOUNT => $originalResin,
+                        TranslationKeys::CONDENSED_RESIN_AMOUNT => $condensedResin,
+                        TranslationKeys::FRAGILE_RESIN_AMOUNT => $fragileResin,
                     ]
-                ));
+                );
 
+                $sender->sendMessage($message);
+                break;
             case "set":
             case "give":
             case "take":
@@ -75,6 +70,6 @@ class ResinCommands extends Command {
                 $sender->sendMessage($this->getUsage());
                 break;
         }
+        return true;
     }
-
 }

@@ -11,12 +11,15 @@ check-update: true
 
 # default-resin: Set the default money when player first joined the server.
 default-resin:
-  "Condensed Resin": 200
+  "Original Resin": 200
   "Fragile Resin": 0
-  "Original Resin": 0
+  "Condensed Resin": 0
 
 # max-resin: Set maximum resin that player can have
-max-resin: 200
+max-resin:
+  "Original Resin": 200
+  "Fragile Resin": -1
+  "Condensed Resin": -1
 
 # interval-to-update: Set default minute when updating resin
 # for example resin will update every 8 minutes

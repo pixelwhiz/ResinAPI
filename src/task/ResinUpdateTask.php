@@ -28,13 +28,12 @@ class ResinUpdateTask extends Task {
 
         $this->updateTime--;
 
-        foreach (Server::getInstance()->getOnlinePlayers() as $player) {
+        foreach ($this->provider->getAll() as $playerName) {
             if ($this->updateTime === 0) {
-                ResinAPI::getInstance()->addResin($player, 1, ResinTypes::OIRIGINAL_RESIN);
+                ResinAPI::getInstance()->addResin($playerName, 1, ResinTypes::ORIGINAL_RESIN);
                 $this->updateTime = 60 * $this->config->get("interval-to-update");
             }
         }
-
     }
 
 }
