@@ -31,15 +31,9 @@ class ResinAPI extends PluginBase {
     protected function onLoad(): void
     {
         self::$instance = $this;
-
-        $this->config = new Config($this->getDataFolder(). "config.yml", Config::YAML);
-
         $this->saveResource("config.yml");
-        $this->saveResource("languages/en-US.ini");
-        $this->initDatabase();
+        $this->config = new Config($this->getDataFolder(). "config.yml", Config::YAML);
         $this->checkUpdate();
-        $this->language = new ResinLang($this);
-
     }
 
     public static function getInstance(): self {
@@ -48,10 +42,11 @@ class ResinAPI extends PluginBase {
 
     protected function onEnable(): void
     {
+        $this->initDatabase();
+        $this->initLanguage();
         Server::getInstance()->getPluginManager()->registerEvents(new EventListener($this), $this);
         Server::getInstance()->getCommandMap()->register("resin", new ResinCommands($this));
         $this->getScheduler()->scheduleRepeatingTask(new ResinUpdateTask($this->config, $this->provider), 20);
-        $this->getLogger()->info($this->language->translateToString("command.resin.description"));
     }
 
     public function checkUpdate(): void {}
@@ -69,9 +64,31 @@ class ResinAPI extends PluginBase {
     }
 
     public function initLanguage(): void {
-        $language = $this->config->get("default-language");
+        $language = $this->config->get("default-lang", "en-US");
+        $languageDir = "languages/";
+        $languagePath = $this->getDataFolder() . $languageDir;
 
+        if (!is_dir($languagePath)) {
+            mkdir($languagePath, 0777, true);
+        }
+
+        foreach (scandir($this->getFile() . "resources/" . $languageDir) as $file) {
+            if ($file !== "." && $file !== ".." && pathinfo($file, PATHINFO_EXTENSION) === "ini") {
+                if (!file_exists($languagePath . $file)) {
+                    $this->saveResource($languageDir . $file);
+                }
+            }
+        }
+
+        $languageFile = $languagePath . "{$language}.ini";
+
+        if (!file_exists($languageFile)) {
+            throw new InvalidArgumentException("Language file for '{$language}' not found in '{$languagePath}'");
+        }
+
+        $this->language = new ResinLang($this);
     }
+
 
     public function getProvider(): Provider {
         return $this->provider;

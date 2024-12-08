@@ -22,7 +22,7 @@ class EventListener implements Listener {
         $player = $event->getPlayer();
 
         if (!$this->provider->accountExists($player)) {
-            $this->provider->createAccount($player, $this->provider->getDefaultResin());
+            $this->provider->createAccount($player);
         }
     }
 

@@ -2,7 +2,11 @@
 
 namespace pixelwhiz\resinapi\commands;
 
+use pixelwhiz\resinapi\language\ResinLang;
+use pixelwhiz\resinapi\language\TranslationKeys;
+use pixelwhiz\resinapi\provider\Provider;
 use pixelwhiz\resinapi\ResinAPI;
+use pixelwhiz\resinapi\ResinTypes;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
@@ -10,11 +14,15 @@ use pocketmine\player\Player;
 class ResinCommands extends Command {
 
     private ResinAPI $plugin;
+    private ResinLang $language;
+    private Provider $provider;
 
     public function __construct(ResinAPI $plugin)
     {
         parent::__construct("resin", "Resin main commands", "Usage: /resin", []);
         $this->plugin = $plugin;
+        $this->language = $plugin->language;
+        $this->provider = $plugin->provider;
         $this->setPermission("resinapi.commands");
     }
 
@@ -33,7 +41,7 @@ class ResinCommands extends Command {
 
             case "check":
 
-                $this->setPermission("res.command.check");
+                $this->setPermission("resinapi.command.check");
                 if (!$this->testPermission($sender)) {
                     return false;
                 }
@@ -43,8 +51,22 @@ class ResinCommands extends Command {
                     return false;
                 }
 
-                $player = $sender instanceof Player? $sender : $this->plugin->getServer()->getPlayerExact($args[1]);
+                if (isset($args[1])) {
+                    $player = $this->plugin->getServer()->getOfflinePlayer($args[1]);
+                    if ($player === null) {
+                        $sender->sendMessage($this->language->translateToString("command.resin.player-not-found"));
+                        return false;
+                    }
+                }
 
+                $amount = $this->provider->getResin($player, ResinTypes::OIRIGINAL_RESIN);
+
+                $sender->sendMessage($this->language->translateToString("command.resin.description",
+                    [
+                        TranslationKeys::PLAYER => $player->getName(),
+                        TranslationKeys::AMOUNT => $amount
+                    ]
+                ));
 
             case "set":
             case "give":

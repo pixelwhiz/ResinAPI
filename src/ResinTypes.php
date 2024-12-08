@@ -4,8 +4,8 @@ namespace pixelwhiz\resinapi;
 
 final class ResinTypes {
 
-    public const CONDENSED_RESIN = 0;
-    public const OIRIGINAL_RESIN = 1;
-    public const FRAGILE_RESIN = 2;
+    public const CONDENSED_RESIN = "Condensed Resin";
+    public const ORIGINAL_RESIN = "Original Resin";
+    public const FRAGILE_RESIN = "Fragile Resin";
 
 }

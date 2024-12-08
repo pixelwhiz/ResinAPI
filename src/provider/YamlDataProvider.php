@@ -11,9 +11,11 @@ class YamlDataProvider implements Provider {
 
     private Config $data;
     private ResinAPI $plugin;
+    private Config $config;
 
     public function __construct(ResinAPI $plugin) {
         $this->plugin = $plugin;
+        $this->config = $plugin->config;
         $dataPath = $plugin->getDataFolder() . "database/data.yml";
 
         if (!is_dir(dirname($dataPath))) {
@@ -29,20 +31,29 @@ class YamlDataProvider implements Provider {
 
     public function accountExists(Player $player): bool
     {
-        // TODO: Implement accountExists() method.
+        if ($this->data->exists($player->getName())) {
+            return true;
+        }
+
+        return false;
     }
 
-    public function createAccount(Player $player, int $defaultResin): void
+    public function createAccount(Player $player): void
     {
-        // TODO: Implement createAccount() method.
+        if (!$this->data->exists($player->getName())) {
+            $this->data->set($player->getName(), [
+                ResinTypes::ORIGINAL_RESIN => $this->config->get("default-resin")[ResinTypes::ORIGINAL_RESIN],
+                ResinTypes::FRAGILE_RESIN => $this->config->get("default-resin")[ResinTypes::FRAGILE_RESIN],
+                ResinTypes::CONDENSED_RESIN => $this->config->get("default-resin")[ResinTypes::CONDENSED_RESIN],
+            ]);
+            $this->data->save();
+        }
     }
-
-
 
     public function getResin(Player $player, int $resinType): int
     {
         return match ($resinType) {
-            ResinTypes::OIRIGINAL_RESIN => $this->data->get($player->getName())[ResinTypes::OIRIGINAL_RESIN],
+            ResinTypes::ORIGINAL_RESIN => $this->data->get($player->getName())[ResinTypes::ORIGINAL_RESIN],
             ResinTypes::FRAGILE_RESIN => $this->data->get($player->getName())[ResinTypes::FRAGILE_RESIN],
             ResinTypes::CONDENSED_RESIN => $this->data->get($player->getName())[ResinTypes::CONDENSED_RESIN],
             default => throw new \InvalidArgumentException("ResinType {$resinType} not found!")

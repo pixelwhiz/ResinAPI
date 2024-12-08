@@ -10,7 +10,10 @@ provider: yaml
 check-update: true
 
 # default-resin: Set the default money when player first joined the server.
-default-resin: 200
+default-resin:
+  "Condensed Resin": 200
+  "Fragile Resin": 0
+  "Original Resin": 0
 
 # max-resin: Set maximum resin that player can have
 max-resin: 200

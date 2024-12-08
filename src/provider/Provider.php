@@ -7,7 +7,7 @@ use pocketmine\player\Player;
 interface Provider {
 
     public function accountExists(Player $player): bool;
-    public function createAccount(Player $player, int $defaultResin): void;
+    public function createAccount(Player $player): void;
     public function getDefaultResin(): int;
 
     public function getResin(Player $player, int $resinType): int;

@@ -31,9 +31,8 @@ class ResinLang extends Language {
         parent::__construct($language, $languagePath, "en-US");
     }
 
-
-    public function translateToString(string $message): string {
-        return $this->translate(new Translatable($message));
+    public function translateToString(string $message, array $variables = []): string {
+        return str_replace(array_keys($variables), array_values($variables), $this->translate(new Translatable($message)));
     }
 
 }
