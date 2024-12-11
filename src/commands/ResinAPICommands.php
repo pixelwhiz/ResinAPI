@@ -2,6 +2,7 @@
 
 namespace pixelwhiz\resinapi\commands;
 
+use pixelwhiz\resinapi\commands\constant\PermissionList;
 use pixelwhiz\resinapi\language\ResinLang;
 use pixelwhiz\resinapi\language\TranslationKeys;
 use pixelwhiz\resinapi\provider\Provider;
@@ -39,14 +40,17 @@ class ResinAPICommands extends Command {
 
         switch ($args[0]) {
             case "help":
+                if (!$this->testPermission($sender, PermissionList::COMMAND_RESIN_HELP)) {
+                    return false;
+                }
 
                 $commands = [
-                    "help (Showing all commands)" => "resinapi.command.help",
-                    "list (List of all resin type)" => "resinapi.command.list",
-                    "check (Check your resin)" => "resinapi.command.check",
-                    "give <player> <resin type> <amount> (Give resin to player)" => "resinapi.command.give",
-                    "set <player> <resin type> <amount> (Set the player's resin)" => "resinapi.command.set",
-                    "take <player> <resin type> <amount> (Take resin from player)" => "resinapi.command.take"
+                    "help (Showing all commands)" => PermissionList::COMMAND_RESIN_HELP,
+                    "list (List of all resin type)" => PermissionList::COMMAND_RESIN_LIST,
+                    "check (Check your resin)" => PermissionList::COMMAND_RESIN_CHECK,
+                    "give <player> <resin type> <amount> (Give resin to player)" => PermissionList::COMMAND_RESIN_GIVE,
+                    "set <player> <resin type> <amount> (Set the player's resin)" => PermissionList::COMMAND_RESIN_SET,
+                    "take <player> <resin type> <amount> (Take resin from player)" => PermissionList::COMMAND_RESIN_TAKE
                 ];
 
                 $sender->sendMessage("All ResinAPI main commands:");
@@ -62,6 +66,10 @@ class ResinAPICommands extends Command {
 
                 break;
             case "list":
+                if (!$this->testPermission($sender, PermissionList::COMMAND_RESIN_LIST)) {
+                    return false;
+                }
+
                 $sender->sendMessage("All Resin Type:");
                 foreach (ResinTypes::$allResin as $resin => $resinValue) {
                     $sender->sendMessage("- ". $resinValue);
@@ -69,6 +77,9 @@ class ResinAPICommands extends Command {
 
                 break;
             case "check":
+                if (!$this->testPermission($sender, PermissionList::COMMAND_RESIN_CHECK)) {
+                    return false;
+                }
 
                 if (!$sender instanceof Player and !isset($args[1])) {
                     $sender->sendMessage("Usage: /resin check <player>");
@@ -76,8 +87,7 @@ class ResinAPICommands extends Command {
                 }
 
                 if (isset($args[1])) {
-                    if (!$sender->hasPermission("resinapi.command.check.other")) {
-                        $sender->sendMessage(ResinAPI::getInstance()->getMessage("no-permission"));
+                    if (!$this->testPermission($sender, PermissionList::COMMAND_RESIN_CHECK_OTHER)) {
                         return false;
                     }
 
@@ -146,6 +156,10 @@ class ResinAPICommands extends Command {
                 break;
 
             case "give":
+                if (!$this->testPermission($sender, PermissionList::COMMAND_RESIN_GIVE)) {
+                    return false;
+                }
+
                 if (count($args) !== 4) {
                     $sender->sendMessage("Usage: /resin give <player> <resin type> <amount>");
                     return false;
@@ -154,20 +168,13 @@ class ResinAPICommands extends Command {
                 if (isset($args[3])) {
                     $player = Server::getInstance()->getPlayerExact($args[1]);
                     $amount = (int)$args[3];
-                    $resinType = null;
-
-                    foreach (ResinTypes::$allResin as $resin => $resinValue) {
-                        if ($resinValue === $args[2]) {
-                            $resinType = $resin;
-                            break;
-                        }
-                    }
+                    $resinType = (string)$args[2];
 
                     $result = ResinAPI::getInstance()->addResin($player, $amount, $resinType);
 
                     switch ($result) {
                         case ResinAPI::RET_SUCCESS:
-                            $sender->sendMessage("Give {$amount}x {$args[2]} resin to " . $player->getName());
+                            $sender->sendMessage("Give {$amount} {$args[2]} resin to " . $player->getName());
                             break;
                         case ResinAPI::RET_NO_ACCOUNT:
                             $sender->sendMessage("Player not found");
@@ -177,6 +184,9 @@ class ResinAPICommands extends Command {
                             break;
                         case ResinAPI::RET_INVALID_NUMBER:
                             $sender->sendMessage("Invalid number");
+                            break;
+                        case ResinAPI::RET_INSUFFICENT_AMOUNT:
+                            $sender->sendMessage("Insufficient amount");
                             break;
                     }
 
@@ -185,6 +195,10 @@ class ResinAPICommands extends Command {
 
                 break;
             case "set":
+                if (!$this->testPermission($sender, PermissionList::COMMAND_RESIN_SET)) {
+                    return false;
+                }
+
                 if (count($args) !== 4) {
                     $sender->sendMessage("Usage: /resin set <player> <resin type> <amount>");
                     return false;
@@ -193,19 +207,12 @@ class ResinAPICommands extends Command {
                 if (isset($args[3])) {
                     $player = Server::getInstance()->getPlayerExact($args[1]);
                     $amount = (int)$args[3];
-                    $resinType = null;
-
-                    foreach (ResinTypes::$allResin as $resin => $resinValue) {
-                        if ($resinValue === $args[2]) {
-                            $resinType = $resin;
-                            break;
-                        }
-                    }
+                    $resinType = (string)$args[2];
 
                     $result = ResinAPI::getInstance()->setResin($player, $amount, $resinType);
                     switch ($result) {
                         case ResinAPI::RET_SUCCESS:
-                            $sender->sendMessage("Player ".$player->getName()." ".$resin." resin was set to ".$amount);
+                            $sender->sendMessage("Player ".$player->getName()." ".$resinType." resin was set to ".$amount);
                             break;
                         case ResinAPI::RET_NO_ACCOUNT:
                             $sender->sendMessage("Player not found");
@@ -216,22 +223,56 @@ class ResinAPICommands extends Command {
                         case ResinAPI::RET_INVALID_NUMBER:
                             $sender->sendMessage("Invalid number");
                             break;
+                        case ResinAPI::RET_INSUFFICENT_AMOUNT:
+                            $sender->sendMessage("Insufficient amount");
+                            break;
                     }
 
                     return true;
                 }
                 break;
             case "take":
+                if (!$this->testPermission($sender, PermissionList::COMMAND_RESIN_TAKE)) {
+                    return false;
+                }
+
+                if (count($args) !== 4) {
+                    $sender->sendMessage("Usage: /resin take <player> <resin type> <amount>");
+                    return false;
+                }
+
+                if (isset($args[3])) {
+                    $player = Server::getInstance()->getPlayerExact($args[1]);
+                    $amount = (int)$args[3];
+                    $resinType = (string)$args[2];
+
+                    $result = ResinAPI::getInstance()->reduceResin($player, $amount, $resinType);
+
+                    switch ($result) {
+                        case ResinAPI::RET_SUCCESS:
+                            $sender->sendMessage("Take {$amount} {$resinType} resin from " . $player->getName());
+                            break;
+                        case ResinAPI::RET_NO_ACCOUNT:
+                            $sender->sendMessage("Player not found");
+                            break;
+                        case ResinAPI::RET_INVALID_RESIN_TYPE:
+                            $sender->sendMessage("Invalid resin type");
+                            break;
+                        case ResinAPI::RET_INVALID_NUMBER:
+                            $sender->sendMessage("Invalid number");
+                            break;
+                        case ResinAPI::RET_INSUFFICENT_AMOUNT:
+                            $sender->sendMessage("Insufficient amount");
+                            break;
+                    }
+
+                    return true;
+                }
 
                 break;
             default:
                 $sender->sendMessage($this->getUsage());
                 return false;
-        }
-
-        if (!$sender->hasPermission("resinapi.command.". $args[0])) {
-            $sender->sendMessage(ResinAPI::getInstance()->getMessage("no-permission"));
-            return false;
         }
 
         return true;

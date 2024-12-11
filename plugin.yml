@@ -35,4 +35,8 @@ permissions:
     description: Allows setting a resin's attributes.
     default: op
 
+  resinapi.command.take:
+    description: Allows taking a resin from another user.
+    default: op
+
 ...

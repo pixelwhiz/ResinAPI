@@ -30,8 +30,9 @@ class ResinAPI extends PluginBase implements Listener {
 
     public static ResinAPI $instance;
 
-    public const RET_PROVIDER_FAILURE = -3;
-    public const RET_INVALID_RESIN_TYPE = -2;
+    public const RET_PROVIDER_FAILURE = -4;
+    public const RET_INVALID_RESIN_TYPE = -3;
+    public const RET_INSUFFICENT_AMOUNT = -2;
     public const RET_INVALID_NUMBER = -1;
     public const RET_NO_ACCOUNT = 0;
     public const RET_SUCCESS = 1;
@@ -118,16 +119,6 @@ class ResinAPI extends PluginBase implements Listener {
         return $playerResin;
     }
 
-    public function getMessage(string $messageKey): string {
-        switch ($messageKey) {
-            case "no-permission":
-                return $this->language->translateToString("command.no-permisssion");
-                break;
-        }
-
-        return "";
-    }
-
     public function getAllResin($player) : array {
         if ($player instanceof Player) {
             $playerName = $player->getName();
@@ -146,6 +137,20 @@ class ResinAPI extends PluginBase implements Listener {
             return self::RET_INVALID_NUMBER;
         }
 
+        $selected = false;
+
+        foreach (ResinTypes::$allResin as $resin => $resinValue) {
+            if ($resinValue === $resinType) {
+                $resinType = $resin;
+                $selected = true;
+                break;
+            }
+        }
+
+        if ($selected === false) {
+            return self::RET_INVALID_RESIN_TYPE;
+        }
+
         if (!isset($this->config->get("max-resin")[$resinType])) {
             return self::RET_PROVIDER_FAILURE;
         }
@@ -161,7 +166,7 @@ class ResinAPI extends PluginBase implements Listener {
         $playerResin = $this->provider->getResin($playerName, $resinType);
 
         if ($playerResin + $amount > $this->config->get("max-resin")[$resinType]) {
-            return self::RET_INVALID_NUMBER;
+            return self::RET_INSUFFICENT_AMOUNT;
         }
 
         $this->provider->addResin($playerName, $amount, $resinType);
@@ -171,6 +176,20 @@ class ResinAPI extends PluginBase implements Listener {
     public function setResin($player, int $amount, string $resinType): int {
         if ($amount <= 0 or !is_numeric($amount)) {
             return self::RET_INVALID_NUMBER;
+        }
+
+        $selected = false;
+
+        foreach (ResinTypes::$allResin as $resin => $resinValue) {
+            if ($resinValue === $resinType) {
+                $resinType = $resin;
+                $selected = true;
+                break;
+            }
+        }
+
+        if ($selected === false) {
+            return self::RET_INVALID_RESIN_TYPE;
         }
 
         if (!isset($this->config->get("max-resin")[$resinType])) {
@@ -186,10 +205,51 @@ class ResinAPI extends PluginBase implements Listener {
         }
 
         if ($amount > $this->config->get("max-resin")[$resinType]) {
-            return self::RET_INVALID_NUMBER;
+            return self::RET_INSUFFICENT_AMOUNT;
         }
 
         $this->provider->setResin($playerName, $amount, $resinType);
+        return self::RET_SUCCESS;
+    }
+
+    public function reduceResin($player, int $amount, string $resinType): int {
+        if ($amount <= 0 or !is_numeric($amount)) {
+            return self::RET_INVALID_NUMBER;
+        }
+
+        $selected = false;
+
+        foreach (ResinTypes::$allResin as $resin => $resinValue) {
+            if ($resinValue === $resinType) {
+                $resinType = $resin;
+                $selected = true;
+                break;
+            }
+        }
+
+        if ($selected === false) {
+            return self::RET_INVALID_RESIN_TYPE;
+        }
+
+        if (!isset($this->config->get("max-resin")[$resinType])) {
+            return self::RET_PROVIDER_FAILURE;
+        }
+
+        if ($player instanceof Player) {
+            $playerName = $player->getName();
+        } elseif (is_string($player) && $this->provider->accountExists($player)) {
+            $playerName = $player;
+        } else {
+            return self::RET_NO_ACCOUNT;
+        }
+
+        $playerResin = $this->provider->getResin($playerName, $resinType);
+
+        if ($playerResin - $amount < 0) {
+            return self::RET_INSUFFICENT_AMOUNT;
+        }
+
+        $this->provider->reduceResin($playerName, $amount, $resinType);
         return self::RET_SUCCESS;
     }
 
