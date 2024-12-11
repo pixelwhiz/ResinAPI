@@ -10,13 +10,29 @@ permissions:
   resinapi.commands:
     description: Allows executing resin commands.
     default: true
+
+  resinapi.command.list:
+    description: Allows listing all available resin commands.
+    default: true
+
   resinapi.command.check:
     description: Allows checking the status of a resin.
     default: true
-  resinapi.command.help:
-    description: Allows executing the give command in resin.
+
+  resinapi.command.check.other:
+    description: Allows checking the status of a player.
     default: op
+
+  resinapi.command.help:
+    description: Allows executing the help command in resin.
+    default: true
+
   resinapi.command.give:
     description: Allows giving a resin to another user.
     default: op
+
+  resinapi.command.set:
+    description: Allows setting a resin's attributes.
+    default: op
+
 ...

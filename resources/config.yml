@@ -18,8 +18,8 @@ default-resin:
 # max-resin: Set maximum resin that player can have
 max-resin:
   "Original Resin": 200
-  "Fragile Resin": -1
-  "Condensed Resin": -1
+  "Fragile Resin": 200
+  "Condensed Resin": 200
 
 # interval-to-update: Set default minute when updating resin
 # for example resin will update every 8 minutes

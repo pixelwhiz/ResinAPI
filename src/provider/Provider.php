@@ -13,9 +13,10 @@ interface Provider {
 
     public function getResin(string $playerName, string $resinType): int;
     public function getAllResin(string $playerName): array;
-//    public function setResin(Player $player, int $amount, int $resinType): void;
+
+    public function setResin(string $playerName, int $amount, string $resinType): void;
     public function addResin(string $playerName, int $amount, string $resinType): void;
-//    public function reduceResin(Player $player, int $amount, int $resinType): void;
+    public function reduceResin(string $playerName, int $amount, string $resinType): void;
 //
     public function getAll(): array;
 //    public function save(): void;

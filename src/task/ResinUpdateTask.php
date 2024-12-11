@@ -7,13 +7,11 @@ use pixelwhiz\resinapi\provider\Provider;
 use pixelwhiz\resinapi\ResinAPI;
 use pixelwhiz\resinapi\ResinTypes;
 use pocketmine\scheduler\Task;
-use pocketmine\Server;
 use pocketmine\utils\Config;
 
 class ResinUpdateTask extends Task {
 
     public int $updateTime;
-
 
     private Config $config;
     private Provider $provider;

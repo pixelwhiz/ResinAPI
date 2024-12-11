@@ -6,7 +6,7 @@ namespace pixelwhiz\resinapi;
 
 use pixelwhiz\resinapi\language\ResinLang;
 use pixelwhiz\resinapi\provider\Provider;
-use pixelwhiz\resinapi\commands\ResinCommands;
+use pixelwhiz\resinapi\commands\ResinAPICommands;
 use pixelwhiz\resinapi\provider\JsonDataProvider;
 use pixelwhiz\resinapi\provider\MySqlDataProvider;
 use pixelwhiz\resinapi\provider\SqliteDataProvider;
@@ -30,11 +30,10 @@ class ResinAPI extends PluginBase implements Listener {
 
     public static ResinAPI $instance;
 
-    public const RET_PROVIDER_FAILURE = -4;
-    public const RET_INVALID_RESIN_TYPE = -3;
-    public const RET_NO_ACCOUNT = -2;
-    public const RET_CANCELLED = -1;
-    public const RET_INVALID_AMOUNT = 0;
+    public const RET_PROVIDER_FAILURE = -3;
+    public const RET_INVALID_RESIN_TYPE = -2;
+    public const RET_INVALID_NUMBER = -1;
+    public const RET_NO_ACCOUNT = 0;
     public const RET_SUCCESS = 1;
 
     protected function onLoad(): void
@@ -53,7 +52,7 @@ class ResinAPI extends PluginBase implements Listener {
     {
         $this->initDatabase();
         $this->initLanguage();
-        Server::getInstance()->getCommandMap()->register("resin", new ResinCommands($this));
+        Server::getInstance()->getCommandMap()->register("resin", new ResinAPICommands($this));
         Server::getInstance()->getPluginManager()->registerEvents($this, $this);
         $this->getScheduler()->scheduleRepeatingTask(new ResinUpdateTask($this->config, $this->provider), 20);
     }
@@ -119,6 +118,16 @@ class ResinAPI extends PluginBase implements Listener {
         return $playerResin;
     }
 
+    public function getMessage(string $messageKey): string {
+        switch ($messageKey) {
+            case "no-permission":
+                return $this->language->translateToString("command.no-permisssion");
+                break;
+        }
+
+        return "";
+    }
+
     public function getAllResin($player) : array {
         if ($player instanceof Player) {
             $playerName = $player->getName();
@@ -133,28 +142,55 @@ class ResinAPI extends PluginBase implements Listener {
     }
 
     public function addResin($player, int $amount, string $resinType): int {
+        if ($amount <= 0 or !is_numeric($amount)) {
+            return self::RET_INVALID_NUMBER;
+        }
+
+        if (!isset($this->config->get("max-resin")[$resinType])) {
+            return self::RET_PROVIDER_FAILURE;
+        }
+
         if ($player instanceof Player) {
             $playerName = $player->getName();
-        } elseif (is_string($player) and $this->provider->accountExists($player)) {
+        } elseif (is_string($player) && $this->provider->accountExists($player)) {
             $playerName = $player;
         } else {
             return self::RET_NO_ACCOUNT;
         }
 
-        if ($amount < 0 || $amount > $this->config->get("max-resin")[$resinType]) {
-            return self::RET_INVALID_AMOUNT;
-        }
-
         $playerResin = $this->provider->getResin($playerName, $resinType);
 
         if ($playerResin + $amount > $this->config->get("max-resin")[$resinType]) {
-            return self::RET_INVALID_AMOUNT;
+            return self::RET_INVALID_NUMBER;
         }
 
         $this->provider->addResin($playerName, $amount, $resinType);
         return self::RET_SUCCESS;
     }
 
+    public function setResin($player, int $amount, string $resinType): int {
+        if ($amount <= 0 or !is_numeric($amount)) {
+            return self::RET_INVALID_NUMBER;
+        }
 
+        if (!isset($this->config->get("max-resin")[$resinType])) {
+            return self::RET_PROVIDER_FAILURE;
+        }
+
+        if ($player instanceof Player) {
+            $playerName = $player->getName();
+        } elseif (is_string($player) && $this->provider->accountExists($player)) {
+            $playerName = $player;
+        } else {
+            return self::RET_NO_ACCOUNT;
+        }
+
+        if ($amount > $this->config->get("max-resin")[$resinType]) {
+            return self::RET_INVALID_NUMBER;
+        }
+
+        $this->provider->setResin($playerName, $amount, $resinType);
+        return self::RET_SUCCESS;
+    }
 
 }

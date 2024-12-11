@@ -4,8 +4,9 @@ namespace pixelwhiz\resinapi\provider;
 
 use pixelwhiz\resinapi\ResinAPI;
 use pixelwhiz\resinapi\ResinTypes;
-use pocketmine\player\Player;
 use pocketmine\utils\Config;
+
+use InvalidArgumentException;
 
 class YamlDataProvider implements Provider {
 
@@ -56,7 +57,7 @@ class YamlDataProvider implements Provider {
             ResinTypes::ORIGINAL_RESIN => $this->data->get($playerName)[ResinTypes::ORIGINAL_RESIN],
             ResinTypes::FRAGILE_RESIN => $this->data->get($playerName)[ResinTypes::FRAGILE_RESIN],
             ResinTypes::CONDENSED_RESIN => $this->data->get($playerName)[ResinTypes::CONDENSED_RESIN],
-            default => throw new \InvalidArgumentException("ResinType {$resinType} not found!")
+            default => throw new InvalidArgumentException("ResinType {$resinType} not found!")
         };
     }
 
@@ -69,6 +70,39 @@ class YamlDataProvider implements Provider {
         if (is_array($playerData)) {
             $resin = $playerData[$resinType] ?? 0;
             $this->data->set($playerName, array_merge($playerData, [$resinType => $resin + $amount]));
+            $this->data->save();
+        } else {
+            $this->data->set($playerName, [
+                'Original Resin' => 0,
+                'Fragile Resin' => 0,
+                'Condensed Resin' => 0,
+            ]);
+            $this->data->save();
+            $this->addResin($playerName, $amount, $resinType);
+        }
+    }
+
+    public function setResin(string $playerName, int $amount, string $resinType): void {
+        $playerData = $this->data->get($playerName);
+        if (is_array($playerData)) {
+            $this->data->set($playerName, array_merge($playerData, [$resinType => $amount]));
+            $this->data->save();
+        } else {
+            $this->data->set($playerName, [
+                'Original Resin' => 0,
+                'Fragile Resin' => 0,
+                'Condensed Resin' => 0,
+            ]);
+            $this->data->save();
+            $this->addResin($playerName, $amount, $resinType);
+        }
+    }
+
+    public function reduceResin(string $playerName, int $amount, string $resinType): void {
+        $playerData = $this->data->get($playerName);
+        if (is_array($playerData)) {
+            $resin = $playerData[$resinType] ?? 0;
+            $this->data->set($playerName, array_merge($playerData, [$resinType => $resin - $amount]));
             $this->data->save();
         } else {
             $this->data->set($playerName, [
