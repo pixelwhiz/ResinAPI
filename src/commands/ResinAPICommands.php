@@ -355,18 +355,28 @@ class ResinAPICommands extends Command {
 
                             break;
                         case ResinAPI::RET_NO_ACCOUNT:
-                            $sender->sendMessage(KnownMessages::ERROR_PLAYER_NOT_FOUND);
+                            $sender->sendMessage(
+                                $this->language->translateToString(KnownMessages::ERROR_PLAYER_NOT_FOUND)
+                            );
                         case ResinAPI::RET_NOT_ONLINE:
-                            $sender->sendMessage(KnownMessages::ERROR_PLAYER_NOT_ONLINE);
+                            $sender->sendMessage(
+                                $this->language->translateToString(KnownMessages::ERROR_PLAYER_NOT_ONLINE)
+                            );
                             break;
                         case ResinAPI::RET_INVALID_RESIN_TYPE:
-                            $sender->sendMessage(KnownMessages::ERROR_INVALID_RESIN_TYPE);
+                            $sender->sendMessage(
+                                $this->language->translateToString(KnownMessages::ERROR_INVALID_RESIN_TYPE)
+                            );
                             break;
                         case ResinAPI::RET_INVALID_NUMBER:
-                            $sender->sendMessage(KnownMessages::ERROR_INVALID_NUMBER);
+                            $sender->sendMessage(
+                                $this->language->translateToString(KnownMessages::ERROR_INVALID_NUMBER)
+                            );
                             break;
                         case ResinAPI::RET_INSUFFICENT_AMOUNT:
-                            $sender->sendMessage(KnownMessages::ERROR_INSUFFICIENT_AMOUNT);
+                            $sender->sendMessage(
+                                $this->language->translateToString(KnownMessages::ERROR_INSUFFICIENT_AMOUNT)
+                            );
                             break;
                     }
 
