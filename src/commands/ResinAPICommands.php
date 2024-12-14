@@ -104,7 +104,7 @@ class ResinAPICommands extends Command {
                             $allResin = $this->provider->getAllResin($target);
                             $maxResinConfig = $this->config->get("max-resin");
                             
-                            $message = $this->language->translateToString(KnownMessages::RESIN_CHECK_OTHER,
+                            $message = $this->language->translateToString(KnownMessages::SUCCESS_RESIN_CHECK_OTHER,
                                 [
                                     TranslationKeys::PLAYER => $target,
                                     TranslationKeys::ORIGINAL_RESIN_AMOUNT => $allResin[ResinTypes::ORIGINAL_RESIN],
@@ -142,7 +142,7 @@ class ResinAPICommands extends Command {
                             $allResin = $this->provider->getAllResin($target);
                             $maxResinConfig = $this->config->get("max-resin");
 
-                            $message = $this->language->translateToString(KnownMessages::RESIN_CHECK,
+                            $message = $this->language->translateToString(KnownMessages::SUCCESS_RESIN_CHECK,
                                 [
                                     TranslationKeys::ORIGINAL_RESIN_AMOUNT => $allResin[ResinTypes::ORIGINAL_RESIN],
                                     TranslationKeys::CONDENSED_RESIN_AMOUNT => $allResin[ResinTypes::CONDENSED_RESIN],
@@ -157,13 +157,13 @@ class ResinAPICommands extends Command {
                             $sender->sendMessage($message);
                             break;
                         case ResinAPI::RET_NOT_ONLINE:
-                            $message = $this->language->translateToString(KnownMessages::PLAYER_NOT_ONLINE, [
+                            $message = $this->language->translateToString(KnownMessages::ERROR_PLAYER_NOT_ONLINE, [
                                 TranslationKeys::PLAYER => $target
                             ]);
                             $sender->sendMessage($message);
                             break;
                         case ResinAPI::RET_NO_ACCOUNT:
-                            $message = $this->language->translateToString(KnownMessages::PLAYER_NOT_FOUND, [
+                            $message = $this->language->translateToString(KnownMessages::ERROR_PLAYER_NOT_FOUND, [
                                 TranslationKeys::PLAYER => $target
                             ]);
                             $sender->sendMessage($message);
@@ -197,7 +197,7 @@ class ResinAPICommands extends Command {
                     switch ($result) {
                         case ResinAPI::RET_SUCCESS:
                             $sender->sendMessage(
-                                $this->language->translateToString(KnownMessages::CONSOLE_RESIN_GIVE, [
+                                $this->language->translateToString(KnownMessages::SUCCESS_CONSOLE_RESIN_GIVE, [
                                     TranslationKeys::PLAYER => $target,
                                     TranslationKeys::RESIN_TYPE => $resinType,
                                     TranslationKeys::AMOUNT => $amount
@@ -206,7 +206,7 @@ class ResinAPICommands extends Command {
 
                             $player = Server::getInstance()->getPlayerExact($target);
                             $player->sendMessage(
-                                $this->language->translateToString(KnownMessages::PLAYER_RESIN_GIVE, [
+                                $this->language->translateToString(KnownMessages::SUCCESS_PLAYER_RESIN_GIVE, [
                                     TranslationKeys::COMMAND_SENDER => $sender->getName(),
                                     TranslationKeys::RESIN_TYPE => $resinType,
                                     TranslationKeys::AMOUNT => $amount
@@ -214,29 +214,29 @@ class ResinAPICommands extends Command {
                             );
                             break;
                         case ResinAPI::RET_NO_ACCOUNT:
-                            $message = $this->language->translateToString(KnownMessages::PLAYER_NOT_FOUND, [
+                            $message = $this->language->translateToString(KnownMessages::ERROR_PLAYER_NOT_FOUND, [
                                 TranslationKeys::PLAYER => $target
                             ]);
                             $sender->sendMessage($message);
                             break;
                         case ResinAPI::RET_NOT_ONLINE:
-                            $message = $this->language->translateToString(KnownMessages::PLAYER_NOT_ONLINE, [
+                            $message = $this->language->translateToString(KnownMessages::ERROR_PLAYER_NOT_ONLINE, [
                                 TranslationKeys::PLAYER => $target
                             ]);
                             $sender->sendMessage($message);
                              break;
                         case ResinAPI::RET_INVALID_RESIN_TYPE:
-                            $message = $this->language->translateToString(KnownMessages::INVALID_RESIN_TYPE, [
+                            $message = $this->language->translateToString(KnownMessages::ERROR_INVALID_RESIN_TYPE, [
                                 TranslationKeys::RESIN_TYPE => $resinType
                             ]);
                             $sender->sendMessage($message);
                             break;
                         case ResinAPI::RET_INVALID_NUMBER:
-                            $message = $this->language->translateToString(KnownMessages::INVALID_NUMBER, []);
+                            $message = $this->language->translateToString(KnownMessages::ERROR_INVALID_NUMBER, []);
                             $sender->sendMessage($message);
                             break;
                         case ResinAPI::RET_INSUFFICENT_AMOUNT:
-                            $message = $this->language->translateToString(KnownMessages::INSUFFICIENT_AMOUNT, []);
+                            $message = $this->language->translateToString(KnownMessages::ERROR_INSUFFICIENT_AMOUNT, []);
                             $sender->sendMessage($message);
                             break;
                     }
@@ -268,7 +268,7 @@ class ResinAPICommands extends Command {
                     switch ($result) {
                         case ResinAPI::RET_SUCCESS:
                             $sender->sendMessage(
-                                $this->language->translateToString(KnownMessages::CONSOLE_RESIN_SET, [
+                                $this->language->translateToString(KnownMessages::SUCCESS_CONSOLE_RESIN_SET, [
                                     TranslationKeys::PLAYER => $target,
                                     TranslationKeys::RESIN_TYPE => $resinType,
                                     TranslationKeys::AMOUNT => $amount
@@ -277,7 +277,7 @@ class ResinAPICommands extends Command {
 
                             $player = Server::getInstance()->getPlayerExact($target);
                             $player->sendMessage(
-                                $this->language->translateToString(KnownMessages::PLAYER_RESIN_SET, [
+                                $this->language->translateToString(KnownMessages::SUCCESS_PLAYER_RESIN_SET, [
                                     TranslationKeys::COMMAND_SENDER => $sender->getName(),
                                     TranslationKeys::RESIN_TYPE => $resinType,
                                     TranslationKeys::AMOUNT => $amount
@@ -285,27 +285,27 @@ class ResinAPICommands extends Command {
                             );
                             break;
                         case ResinAPI::RET_NO_ACCOUNT:
-                            $message = $this->language->translateToString(KnownMessages::PLAYER_NOT_FOUND, [
+                            $message = $this->language->translateToString(KnownMessages::ERROR_PLAYER_NOT_FOUND, [
                                 TranslationKeys::PLAYER => $target
                             ]);
                             $sender->sendMessage($message);
                             break;
                         case ResinAPI::RET_NOT_ONLINE:
-                            $message = $this->language->translateToString(KnownMessages::PLAYER_NOT_ONLINE, [
+                            $message = $this->language->translateToString(KnownMessages::ERROR_PLAYER_NOT_ONLINE, [
                                 TranslationKeys::PLAYER => $target
                             ]);
                             $sender->sendMessage($message);
                             break;
                         case ResinAPI::RET_INVALID_RESIN_TYPE:
-                            $message = $this->language->translateToString(KnownMessages::INVALID_RESIN_TYPE);
+                            $message = $this->language->translateToString(KnownMessages::ERROR_INVALID_RESIN_TYPE);
                             $sender->sendMessage($message);
                             break;
                         case ResinAPI::RET_INVALID_NUMBER:
-                            $message = $this->language->translateToString(KnownMessages::INVALID_NUMBER);
+                            $message = $this->language->translateToString(KnownMessages::ERROR_INVALID_NUMBER);
                             $sender->sendMessage($message);
                             break;
                         case ResinAPI::RET_INSUFFICENT_AMOUNT:
-                            $message = $this->language->translateToString(KnownMessages::INSUFFICIENT_AMOUNT);
+                            $message = $this->language->translateToString(KnownMessages::ERROR_INSUFFICIENT_AMOUNT);
                             $sender->sendMessage($message);
                             break;
                     }
@@ -337,7 +337,7 @@ class ResinAPICommands extends Command {
                     switch ($result) {
                         case ResinAPI::RET_SUCCESS:
                             $sender->sendMessage(
-                                $this->language->translateToString(KnownMessages::CONSOLE_RESIN_TAKE, [
+                                $this->language->translateToString(KnownMessages::SUCCESS_CONSOLE_RESIN_TAKE, [
                                     TranslationKeys::PLAYER => $target,
                                     TranslationKeys::RESIN_TYPE => $resinType,
                                     TranslationKeys::AMOUNT => $amount
@@ -346,7 +346,7 @@ class ResinAPICommands extends Command {
 
                             $player = Server::getInstance()->getPlayerExact($target);
                             $player->sendMessage(
-                                $this->language->translateToString(KnownMessages::PLAYER_RESIN_TAKE, [
+                                $this->language->translateToString(KnownMessages::SUCCESS_PLAYER_RESIN_TAKE, [
                                     TranslationKeys::COMMAND_SENDER => $sender->getName(),
                                     TranslationKeys::RESIN_TYPE => $resinType,
                                     TranslationKeys::AMOUNT => $amount
@@ -355,18 +355,18 @@ class ResinAPICommands extends Command {
 
                             break;
                         case ResinAPI::RET_NO_ACCOUNT:
-                            $sender->sendMessage(KnownMessages::PLAYER_NOT_FOUND);
+                            $sender->sendMessage(KnownMessages::ERROR_PLAYER_NOT_FOUND);
                         case ResinAPI::RET_NOT_ONLINE:
-                            $sender->sendMessage(KnownMessages::PLAYER_NOT_ONLINE);
+                            $sender->sendMessage(KnownMessages::ERROR_PLAYER_NOT_ONLINE);
                             break;
                         case ResinAPI::RET_INVALID_RESIN_TYPE:
-                            $sender->sendMessage(KnownMessages::INVALID_RESIN_TYPE);
+                            $sender->sendMessage(KnownMessages::ERROR_INVALID_RESIN_TYPE);
                             break;
                         case ResinAPI::RET_INVALID_NUMBER:
-                            $sender->sendMessage(KnownMessages::INVALID_NUMBER);
+                            $sender->sendMessage(KnownMessages::ERROR_INVALID_NUMBER);
                             break;
                         case ResinAPI::RET_INSUFFICENT_AMOUNT:
-                            $sender->sendMessage(KnownMessages::INSUFFICIENT_AMOUNT);
+                            $sender->sendMessage(KnownMessages::ERROR_INSUFFICIENT_AMOUNT);
                             break;
                     }
 
