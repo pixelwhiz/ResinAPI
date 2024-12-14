@@ -12,8 +12,11 @@ use pixelwhiz\resinapi\provider\MySqlDataProvider;
 use pixelwhiz\resinapi\provider\SqliteDataProvider;
 use pixelwhiz\resinapi\provider\YamlDataProvider;
 use pixelwhiz\resinapi\task\ResinUpdateTask;
+use pixelwhiz\resinapi\task\SaveTask;
+use pocketmine\command\CommandSender;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
@@ -30,10 +33,11 @@ class ResinAPI extends PluginBase implements Listener {
 
     public static ResinAPI $instance;
 
-    public const RET_PROVIDER_FAILURE = -4;
-    public const RET_INVALID_RESIN_TYPE = -3;
-    public const RET_INSUFFICENT_AMOUNT = -2;
-    public const RET_INVALID_NUMBER = -1;
+    public const RET_PROVIDER_FAILURE = -5;
+    public const RET_INVALID_RESIN_TYPE = -4;
+    public const RET_INSUFFICENT_AMOUNT = -3;
+    public const RET_INVALID_NUMBER = -2;
+    public const RET_NOT_ONLINE = -1;
     public const RET_NO_ACCOUNT = 0;
     public const RET_SUCCESS = 1;
 
@@ -56,6 +60,7 @@ class ResinAPI extends PluginBase implements Listener {
         Server::getInstance()->getCommandMap()->register("resin", new ResinAPICommands($this));
         Server::getInstance()->getPluginManager()->registerEvents($this, $this);
         $this->getScheduler()->scheduleRepeatingTask(new ResinUpdateTask($this->config, $this->provider), 20);
+        $this->getScheduler()->scheduleRepeatingTask(new SaveTask($this), 20);
     }
 
     public function checkUpdate(): void {}
@@ -70,6 +75,8 @@ class ResinAPI extends PluginBase implements Listener {
             "mysql" => new MySqlDataProvider($this),
             default => throw new InvalidArgumentException("Unsupported provider: $provider")
         };
+
+        $this->provider->open();
     }
 
     public function initLanguage(): void {
@@ -106,39 +113,33 @@ class ResinAPI extends PluginBase implements Listener {
         }
     }
 
-    public function getResin($player, string $resinType): int {
-        if ($player instanceof Player) {
-            $playerName = $player->getName();
-        } elseif (is_string($player) and $this->provider->accountExists($player)) {
-            $playerName = $player;
-        } else {
-            return self::RET_NO_ACCOUNT;
-        }
-
-        $playerResin = $this->provider->getResin($playerName, $resinType);
-        return $playerResin;
+    public function hasAccount(string $playerName): bool {
+        return $this->provider->accountExists($playerName);
     }
 
-    public function getAllResin($player) : array {
-        if ($player instanceof Player) {
-            $playerName = $player->getName();
-        } elseif (is_string($player) and $this->provider->accountExists($player)) {
-            $playerName = $player;
-        } else {
-            return [];
+    public function checkResin($player): int
+    {
+        $playerName = $player instanceof Player ? $player->getName() : (string)$player;
+
+        if ($this->hasAccount($playerName)) {
+
+            $player = Server::getInstance()->getPlayerExact($playerName);
+            if (!$player) {
+                return self::RET_NOT_ONLINE;
+            }
+
+            return self::RET_SUCCESS;
         }
 
-        $playerResin = $this->provider->getAllResin($playerName);
-        return $playerResin;
+        return self::RET_NO_ACCOUNT;
     }
 
     public function addResin($player, int $amount, string $resinType): int {
-        if ($amount <= 0 or !is_numeric($amount)) {
+        if ($amount <= 0 || !is_numeric($amount)) {
             return self::RET_INVALID_NUMBER;
         }
 
         $selected = false;
-
         foreach (ResinTypes::$allResin as $resin => $resinValue) {
             if ($resinValue === $resinType) {
                 $resinType = $resin;
@@ -147,7 +148,7 @@ class ResinAPI extends PluginBase implements Listener {
             }
         }
 
-        if ($selected === false) {
+        if (!$selected) {
             return self::RET_INVALID_RESIN_TYPE;
         }
 
@@ -155,23 +156,26 @@ class ResinAPI extends PluginBase implements Listener {
             return self::RET_PROVIDER_FAILURE;
         }
 
-        if ($player instanceof Player) {
-            $playerName = $player->getName();
-        } elseif (is_string($player) && $this->provider->accountExists($player)) {
-            $playerName = $player;
-        } else {
-            return self::RET_NO_ACCOUNT;
+        $playerName = $player instanceof Player ? $player->getName() : (string)$player;
+
+        if ($this->provider->getResin($playerName, $resinType) !== false) {
+            $playerResin = $this->provider->getResin($playerName, $resinType);
+            if ($playerResin + $amount > $this->config->get("max-resin")[$resinType]) {
+                return self::RET_INSUFFICENT_AMOUNT;
+            }
+
+            $player = Server::getInstance()->getPlayerExact($playerName);
+            if (!$player) {
+                return self::RET_NOT_ONLINE;
+            }
+
+            $this->provider->addResin($playerName, $amount, $resinType);
+            return self::RET_SUCCESS;
         }
 
-        $playerResin = $this->provider->getResin($playerName, $resinType);
-
-        if ($playerResin + $amount > $this->config->get("max-resin")[$resinType]) {
-            return self::RET_INSUFFICENT_AMOUNT;
-        }
-
-        $this->provider->addResin($playerName, $amount, $resinType);
-        return self::RET_SUCCESS;
+        return self::RET_NO_ACCOUNT;
     }
+
 
     public function setResin($player, int $amount, string $resinType): int {
         if ($amount <= 0 or !is_numeric($amount)) {
@@ -196,20 +200,23 @@ class ResinAPI extends PluginBase implements Listener {
             return self::RET_PROVIDER_FAILURE;
         }
 
-        if ($player instanceof Player) {
-            $playerName = $player->getName();
-        } elseif (is_string($player) && $this->provider->accountExists($player)) {
-            $playerName = $player;
-        } else {
-            return self::RET_NO_ACCOUNT;
+        $playerName = $player instanceof Player ? $player->getName() : (string)$player;
+
+        if ($this->provider->getResin($playerName, $resinType) !== false) {
+            if ($amount > $this->config->get("max-resin")[$resinType]) {
+                return self::RET_INSUFFICENT_AMOUNT;
+            }
+
+            $player = Server::getInstance()->getPlayerExact($playerName);
+            if (!$player) {
+                return self::RET_NOT_ONLINE;
+            }
+
+            $this->provider->setResin($playerName, $amount, $resinType);
+            return self::RET_SUCCESS;
         }
 
-        if ($amount > $this->config->get("max-resin")[$resinType]) {
-            return self::RET_INSUFFICENT_AMOUNT;
-        }
-
-        $this->provider->setResin($playerName, $amount, $resinType);
-        return self::RET_SUCCESS;
+        return self::RET_NO_ACCOUNT;
     }
 
     public function reduceResin($player, int $amount, string $resinType): int {
@@ -235,22 +242,33 @@ class ResinAPI extends PluginBase implements Listener {
             return self::RET_PROVIDER_FAILURE;
         }
 
-        if ($player instanceof Player) {
-            $playerName = $player->getName();
-        } elseif (is_string($player) && $this->provider->accountExists($player)) {
-            $playerName = $player;
-        } else {
-            return self::RET_NO_ACCOUNT;
+        $playerName = $player instanceof Player ? $player->getName() : (string)$player;
+
+        if (!Server::getInstance()->getPlayerExact($playerName)->isOnline() and $this->hasAccount($playerName)) {
+            return self::RET_NOT_ONLINE;
         }
 
-        $playerResin = $this->provider->getResin($playerName, $resinType);
+        if ($this->provider->getResin($playerName, $resinType) !== false) {
+            $playerResin = $this->provider->getResin($playerName, $resinType);
+            if ($playerResin - $amount < 0) {
+                return self::RET_INSUFFICENT_AMOUNT;
+            }
 
-        if ($playerResin - $amount < 0) {
-            return self::RET_INSUFFICENT_AMOUNT;
+            $player = Server::getInstance()->getPlayerExact($playerName);
+            if (!$player) {
+                return self::RET_NOT_ONLINE;
+            }
+
+            $this->provider->reduceResin($playerName, $amount, $resinType);
+            return self::RET_SUCCESS;
         }
 
-        $this->provider->reduceResin($playerName, $amount, $resinType);
-        return self::RET_SUCCESS;
+        return self::RET_NO_ACCOUNT;
+
+    }
+
+    public function saveAll(): void {
+        $this->provider->save();
     }
 
 }

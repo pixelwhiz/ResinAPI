@@ -11,6 +11,7 @@ use InvalidArgumentException;
 class YamlDataProvider implements Provider {
 
     private Config $data;
+    private array $resin = [];
     private ResinAPI $plugin;
     private Config $config;
 
@@ -27,98 +28,80 @@ class YamlDataProvider implements Provider {
     }
 
     public function getDefaultResin(): int {
-        return $this->data->get("default-resin");
+        return $this->config->get("default-resin");
     }
 
-    public function accountExists(string $playerName): bool
-    {
-        if ($this->data->exists($playerName)) {
-            return true;
-        }
-
-        return false;
+    public function accountExists(string $playerName): bool {
+        return isset($this->resin[$playerName]);
     }
 
-    public function createAccount(string $playerName): void
+
+    public function createAccount(string $playerName): bool
     {
-        if (!$this->data->exists($playerName)) {
-            $this->data->set($playerName, [
+        if (!isset($this->resin[$playerName])) {
+            $this->resin[$playerName] = [
                 ResinTypes::ORIGINAL_RESIN => $this->config->get("default-resin")[ResinTypes::ORIGINAL_RESIN],
                 ResinTypes::FRAGILE_RESIN => $this->config->get("default-resin")[ResinTypes::FRAGILE_RESIN],
                 ResinTypes::CONDENSED_RESIN => $this->config->get("default-resin")[ResinTypes::CONDENSED_RESIN],
-            ]);
-            $this->data->save();
+            ];
+            return true;
         }
+        return false;
     }
 
     public function getResin(string $playerName, string $resinType): int
     {
-        return match ($resinType) {
-            ResinTypes::ORIGINAL_RESIN => $this->data->get($playerName)[ResinTypes::ORIGINAL_RESIN],
-            ResinTypes::FRAGILE_RESIN => $this->data->get($playerName)[ResinTypes::FRAGILE_RESIN],
-            ResinTypes::CONDENSED_RESIN => $this->data->get($playerName)[ResinTypes::CONDENSED_RESIN],
-            default => throw new InvalidArgumentException("ResinType {$resinType} not found!")
-        };
+        if (isset($this->resin[$playerName])) {
+            return match ($resinType) {
+                ResinTypes::ORIGINAL_RESIN => $this->resin[$playerName][ResinTypes::ORIGINAL_RESIN],
+                ResinTypes::FRAGILE_RESIN => $this->resin[$playerName][ResinTypes::FRAGILE_RESIN],
+                ResinTypes::CONDENSED_RESIN => $this->resin[$playerName][ResinTypes::CONDENSED_RESIN],
+                default => throw new InvalidArgumentException("ResinType {$resinType} not found!")
+            };
+        }
+        return false;
     }
 
     public function getAllResin(string $playerName): array {
-        return $this->data->get($playerName);
+        return $this->resin[$playerName];
     }
 
-    public function addResin(string $playerName, int $amount, string $resinType): void {
-        $playerData = $this->data->get($playerName);
-        if (is_array($playerData)) {
-            $resin = $playerData[$resinType] ?? 0;
-            $this->data->set($playerName, array_merge($playerData, [$resinType => $resin + $amount]));
-            $this->data->save();
-        } else {
-            $this->data->set($playerName, [
-                'Original Resin' => 0,
-                'Fragile Resin' => 0,
-                'Condensed Resin' => 0,
-            ]);
-            $this->data->save();
-            $this->addResin($playerName, $amount, $resinType);
+    public function addResin(string $playerName, int $amount, string $resinType): bool {
+        if (isset($this->resin[$playerName])) {
+            $this->resin[$playerName][$resinType] += $amount;
+            return true;
         }
+        return false;
     }
 
-    public function setResin(string $playerName, int $amount, string $resinType): void {
-        $playerData = $this->data->get($playerName);
-        if (is_array($playerData)) {
-            $this->data->set($playerName, array_merge($playerData, [$resinType => $amount]));
-            $this->data->save();
-        } else {
-            $this->data->set($playerName, [
-                'Original Resin' => 0,
-                'Fragile Resin' => 0,
-                'Condensed Resin' => 0,
-            ]);
-            $this->data->save();
-            $this->addResin($playerName, $amount, $resinType);
+    public function setResin(string $playerName, int $amount, string $resinType): bool {
+        if (isset($this->resin[$playerName])) {
+            $this->resin[$playerName][$resinType] = $amount;
+            return true;
         }
+        return false;
     }
 
-    public function reduceResin(string $playerName, int $amount, string $resinType): void {
-        $playerData = $this->data->get($playerName);
-        if (is_array($playerData)) {
-            $resin = $playerData[$resinType] ?? 0;
-            $this->data->set($playerName, array_merge($playerData, [$resinType => $resin - $amount]));
-            $this->data->save();
-        } else {
-            $this->data->set($playerName, [
-                'Original Resin' => 0,
-                'Fragile Resin' => 0,
-                'Condensed Resin' => 0,
-            ]);
-            $this->data->save();
-            $this->addResin($playerName, $amount, $resinType);
+    public function reduceResin(string $playerName, int $amount, string $resinType): bool {
+        if (isset($this->resin[$playerName])) {
+            $this->resin[$playerName][$resinType] -= $amount;
+            return true;
         }
+        return false;
     }
 
 
-    public function getAll(): array
-    {
-        return $this->data->getAll(true);
+    public function getAll(): array {
+        return array_keys($this->resin);
+    }
+
+    public function save(): void {
+        $this->data->setAll($this->resin);
+        $this->data->save();
+    }
+
+    public function open(): void {
+        $this->resin = $this->data->getAll();
     }
 
 }

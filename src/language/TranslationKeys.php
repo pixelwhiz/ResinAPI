@@ -14,4 +14,9 @@ final class TranslationKeys {
 
     public const PLAYER = "{player}";
 
+    public const COMMAND_SENDER = "{sender}";
+
+    public const RESIN_TYPE = "{resin_type}";
+    public const AMOUNT = "{amount}";
+
 }

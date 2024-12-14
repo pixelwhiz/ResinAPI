@@ -4,7 +4,6 @@
 namespace pixelwhiz\resinapi\task;
 
 use pixelwhiz\resinapi\provider\Provider;
-use pixelwhiz\resinapi\ResinAPI;
 use pixelwhiz\resinapi\ResinTypes;
 use pocketmine\scheduler\Task;
 use pocketmine\utils\Config;
@@ -28,10 +27,13 @@ class ResinUpdateTask extends Task {
 
         foreach ($this->provider->getAll() as $playerName) {
             if ($this->updateTime === 0) {
-                ResinAPI::getInstance()->addResin($playerName, 1, ResinTypes::ORIGINAL_RESIN);
-                $this->updateTime = 60 * $this->config->get("interval-to-update");
+                if ($this->provider->getResin($playerName, ResinTypes::ORIGINAL_RESIN) < $this->config->get("max-resin")[ResinTypes::ORIGINAL_RESIN]) {
+                    $this->provider->addResin($playerName, 1, ResinTypes::ORIGINAL_RESIN);
+                    $this->updateTime = 60 * $this->config->get("interval-to-update");
+                }
             }
         }
     }
+
 
 }
