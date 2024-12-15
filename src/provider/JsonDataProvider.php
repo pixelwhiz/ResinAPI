@@ -7,9 +7,11 @@ use pixelwhiz\resinapi\ResinTypes;
 use pocketmine\utils\Config;
 use InvalidArgumentException;
 
+use mysqli;
+
 class JsonDataProvider implements Provider {
 
-    private Config $data;
+    private mysqli $data;
     private array $resin = [];
     private ResinAPI $plugin;
     private Config $config;

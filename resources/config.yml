@@ -27,11 +27,8 @@ interval-to-update: 8
 
 database:
   mysql:
-    host: 127.0.0.1
+    host: localhost
     username: username
     password: password
     schema: db_name
     port: 3306
-
-  sqlite:
-    path: players.db

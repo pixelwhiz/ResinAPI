@@ -19,9 +19,6 @@ interface Provider {
     public function reduceResin(string $playerName, int $amount, string $resinType): bool;
     public function save(): void;
     public function open(): void;
-//
     public function getAll(): array;
-//    public function save(): void;
-//    public function close(): void;
 
 }
