@@ -27,14 +27,13 @@ class YamlDataProvider implements Provider {
         $this->data = new Config($dataPath, Config::YAML);
     }
 
-    public function getDefaultResin(): int {
+    public function getDefaultResin(): mixed {
         return $this->config->get("default-resin");
     }
 
     public function accountExists(string $playerName): bool {
         return isset($this->resin[$playerName]);
     }
-
 
     public function createAccount(string $playerName): bool
     {

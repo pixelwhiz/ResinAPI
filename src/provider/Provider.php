@@ -9,7 +9,7 @@ interface Provider {
 
     public function accountExists(string $playerName): bool;
     public function createAccount(string $playerName): bool;
-    public function getDefaultResin(): int;
+    public function getDefaultResin(): mixed;
 
     public function getResin(string $playerName, string $resinType): int;
     public function getAllResin(string $playerName): array;
