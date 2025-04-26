@@ -30,7 +30,7 @@ class MySqlDataProvider implements Provider {
         $database = $config["schema"];
         $port = $config["port"];
 
-        $this->data = new mysqli($host, $username, $password, $database, $port  );
+        $this->data = new mysqli($host, $username, $password, $database, $port);
 
         if ($this->data->connect_error) {
             throw new RuntimeException("Failed to conenct to MySQL: ". $this->data->connect_error);
