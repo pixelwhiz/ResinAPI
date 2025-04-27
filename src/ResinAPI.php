@@ -39,6 +39,8 @@ use pixelwhiz\resinapi\provider\SqliteDataProvider;
 use pixelwhiz\resinapi\provider\YamlDataProvider;
 use pixelwhiz\resinapi\task\ResinUpdateTask;
 use pixelwhiz\resinapi\task\SaveTask;
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\player\Player;
