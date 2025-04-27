@@ -165,5 +165,3 @@ and if you found bug or have any issues please report them [here](https://github
 ## License <a name="license"></a>
 
 This project is licensed under LGPL-3.0. Please see [LICENSE](https://github.com/pixelwhiz/ResinAPI/LICENSE) file for details.
-# ResinAPI
-🌙 An Ultimate resin plugin for PocketMine Server inspired from Genshin Impact
