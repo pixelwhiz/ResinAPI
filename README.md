@@ -133,7 +133,7 @@ $resinAPI->sendInvoice($player, function(Player $player, string $resinType, int 
 
 #### Practical Example
 
-it use `PlayerInteractEvent` but if you want implement like Genshin Impact you must create an Entity object, You can use my [Herobrine](https://github.com/pixelwhiz/Herobrine) plugin for example.
+The code below uses `PlayerInteractEvent` but if you want implement like Genshin Impact you must create an Entity object, You can use my [Herobrine](https://github.com/pixelwhiz/Herobrine) plugin for example.
 ```php
 use pocketmine\event\PlayerInteractEvent;
 use pocketmine\player\Player;
