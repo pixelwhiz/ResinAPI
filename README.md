@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🌙 ResinAPI
 <hr>
 
@@ -122,7 +123,7 @@ class Main extends PluginBase {
 ```
 
 ### Send Invoice to Player <a name="send_invoice"></a>
-![img.png](assets/img.png)
+![send_invoice.png](assets/send_invoice.png)
 
 You can use an example transaction in ResinAPI same as Genshin Impact
 
@@ -172,3 +173,7 @@ and if you found bug or have any issues please report them [here](https://github
 <hr>
 
 This project is licensed under LGPL-3.0. Please see [LICENSE](https://github.com/pixelwhiz/ResinAPI/LICENSE) file for details.
+=======
+# ResinAPI
+🌙 An Ultimate resin plugin for PocketMine Server inspired from Genshin Impact
+>>>>>>> 08603bc44840e740418916611e80dc023663f69a
