@@ -1,13 +1,10 @@
-<<<<<<< HEAD
 # 🌙 ResinAPI
-<hr>
 
 ![ResinAPI Logo](assets/icon.png)
 
 ResinAPI is an economy plugin for [PocketMine-MP](https://github.com/pmmp/PocketMine-MP) used to handle payment transactions when defeating bosses or obtaining domain artifacts like Genshin Impact game
 
 ## Table of Contents
-<hr>
 
 - [Commands](#commands)
 - [Configuration](#configuration)
@@ -18,7 +15,6 @@ ResinAPI is an economy plugin for [PocketMine-MP](https://github.com/pmmp/Pocket
 - [License](#license)
 
 ## Commands <a name="commands"></a>
-<hr>
 
 | Name      | Description | Permission | Usage         |
 |-----------|-------------|------------|---------------|
@@ -31,7 +27,6 @@ ResinAPI is an economy plugin for [PocketMine-MP](https://github.com/pmmp/Pocket
 
 
 ## Configuration <a name="configuration"></a>
-<hr>
 
 ResinAPI can be configured via `config.yml`. Here's a complete reference:
 ```yaml
@@ -72,7 +67,6 @@ database:
 ```
 
 ## For Developers <a name="for_developers"></a>
-<hr>
 
 ### Manage Player's Resin <a name="manage_resin"></a>
 All of method to Manage Player's Resin `addResin()`, `reduceResin()` and `setResin()`
@@ -123,7 +117,7 @@ class Main extends PluginBase {
 ```
 
 ### Send Invoice to Player <a name="send_invoice"></a>
-![send_invoice.png](assets/send_invoice.png)
+<img src="assets/send_invoice.png" width="500" height="500">
 
 You can use an example transaction in ResinAPI same as Genshin Impact
 
@@ -159,7 +153,6 @@ public function onChestOpen(PlayerInteractEvent $event) {
 ```
 
 ## Contributing <a name="contributing"></a>
-<hr>
 
 All kinds of contribution are welcome
 - Send feedbacks.
@@ -170,10 +163,7 @@ All kinds of contribution are welcome
 and if you found bug or have any issues please report them [here](https://github.com/pixelwhiz/ResinAPI/issues/new)
 
 ## License <a name="license"></a>
-<hr>
 
 This project is licensed under LGPL-3.0. Please see [LICENSE](https://github.com/pixelwhiz/ResinAPI/LICENSE) file for details.
-=======
 # ResinAPI
 🌙 An Ultimate resin plugin for PocketMine Server inspired from Genshin Impact
->>>>>>> 08603bc44840e740418916611e80dc023663f69a
