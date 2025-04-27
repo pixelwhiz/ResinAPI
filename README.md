@@ -123,6 +123,9 @@ You can use an example transaction in ResinAPI same as Genshin Impact
 
 #### Basic Usage
 ```php
+use pixelwhiz\resinapi\ResinAPI;
+
+$resinApi = ResinAPI::getInstance();
 $resinAPI->sendInvoice($player, function(Player $player, string $resinType, int $amount) {
     $player->sendMessage("Successfully paid $amount $resinType!");
 });
@@ -132,9 +135,16 @@ $resinAPI->sendInvoice($player, function(Player $player, string $resinType, int 
 
 it use `PlayerInteractEvent` but if you want implement like Genshin Impact you must create an Entity object, You can use my [Herobrine](https://github.com/pixelwhiz/Herobrine) plugin for example.
 ```php
+use pocketmine\event\PlayerInteractEvent;
+use pocketmine\player\Player;
+use pocketmine\item\VanillaItems;
+
+use pixelwhiz\resinapi\ResinAPI;
+
 public function onChestOpen(PlayerInteractEvent $event) {
     $player = $event->getPlayer();
     
+    $resinApi = ResinAPI::getInstance();    
     $resinAPI->sendInvoice($player, function(Player $player, string $type, int $amount) {
         $items = [
             VanillaItems::STONE(),
@@ -145,8 +155,6 @@ public function onChestOpen(PlayerInteractEvent $event) {
         foreach($items as $item) {
             $player->getInventory()->addItem($item);
         }
-        
-        $player->getInventory()->addItem(ItemFactory::getInstance()->get(ItemIds::DIAMOND));
         $player->sendMessage("Successfully paid $amount $resinType!");
     });
 }
