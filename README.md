@@ -117,7 +117,7 @@ class Main extends PluginBase {
 ```
 
 ### Send Invoice to Player <a name="send_invoice"></a>
-<img src="assets/send_invoice.png" width="500" height="500">
+<img src="assets/send_invoice.png" width="550" height="500">
 
 You can use an example transaction in ResinAPI same as Genshin Impact
 
