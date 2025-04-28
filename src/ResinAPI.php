@@ -335,7 +335,15 @@ class ResinAPI extends PluginBase implements Listener {
             return self::RET_INVALID_NUMBER;
         }
 
-        if (!in_array($resinType, ResinTypes::$allResin)) {
+        $selected = false;
+        foreach (ResinTypes::$allResin as $resin => $resinValue) {
+            if ($resinValue === $resinType) {
+                $resinType = $resin;
+                $selected = true;
+            }
+        }
+
+        if (!$selected) {
             return self::RET_INVALID_RESIN_TYPE;
         }
 
@@ -377,7 +385,15 @@ class ResinAPI extends PluginBase implements Listener {
             return self::RET_INVALID_NUMBER;
         }
 
-        if (!in_array($resinType, ResinTypes::$allResin)) {
+        $selected = false;
+        foreach (ResinTypes::$allResin as $resin => $resinValue) {
+            if ($resinValue === $resinType) {
+                $resinType = $resin;
+                $selected = true;
+            }
+        }
+
+        if (!$selected) {
             return self::RET_INVALID_RESIN_TYPE;
         }
 
@@ -417,7 +433,15 @@ class ResinAPI extends PluginBase implements Listener {
             return self::RET_INVALID_NUMBER;
         }
 
-        if (!in_array($resinType, ResinTypes::$allResin)) {
+        $selected = false;
+        foreach (ResinTypes::$allResin as $resin => $resinValue) {
+            if ($resinValue === $resinType) {
+                $resinType = $resin;
+                $selected = true;
+            }
+        }
+
+        if (!$selected) {
             return self::RET_INVALID_RESIN_TYPE;
         }
 
