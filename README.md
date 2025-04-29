@@ -151,10 +151,8 @@ public function onChestOpen(PlayerInteractEvent $event) {
             VanillaItems::DIAMOND_SWORD(),
             VanillaItems::IRON_SWORD(),
         ];
-        
-        foreach($items as $item) {
-            $player->getInventory()->addItem($item);
-        }
+        $item = $items[array_rand($items)];
+        $player->getInventory()->addItem($item);
         $player->sendMessage("Successfully paid $amount $resinType!");
     });
 }
