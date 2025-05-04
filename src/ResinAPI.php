@@ -262,13 +262,13 @@ class ResinAPI extends PluginBase implements Listener {
     }
 
     /**
-     * Displays resin usage invoice form to player
+     * Send payment to player
      *
      * @param Player $player
      * @param callable|null $onSuccess Callback when transaction succeeds
      * @return bool
      */
-    public function sendInvoice(Player $player, ?callable $onSuccess = null) : bool {
+    public function sendPayment(Player $player, $title, ?callable $onSuccess = null) : bool {
         $resins = $this->getAllResins($player);
         $original_resin = $resins[ResinTypes::ORIGINAL_RESIN];
         $condensed_resin = $resins[ResinTypes::CONDENSED_RESIN];
@@ -313,7 +313,7 @@ class ResinAPI extends PluginBase implements Listener {
             return $success;
         });
 
-        $form->setTitle("Resin Invoice");
+        $form->setTitle($title);
         $form->addButton("Open 40 Original Resin");
         $form->addButton("Open 1 Condensed Resin");
         $form->addButton("Close", 0, "textures/blocks/barrier");

@@ -10,7 +10,7 @@ ResinAPI is an economy plugin for [PocketMine-MP](https://github.com/pmmp/Pocket
 - [Configuration](#configuration)
 - [For Developers](#for_developers)
   - [Manage Player's Resin](#manage_resin)
-  - [Send Invoice to Player](#send_invoice)
+  - [Send Payment to Player](#send_payment)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -116,8 +116,8 @@ class Main extends PluginBase {
 }
 ```
 
-### Send Invoice to Player <a name="send_invoice"></a>
-<img src="assets/send_invoice.png" width="550" height="500">
+### Send Payment to Player <a name="send_payment"></a>
+<img src="assets/send_payment.png" width="550" height="500">
 
 You can use an example transaction in ResinAPI same as Genshin Impact
 
@@ -126,7 +126,7 @@ You can use an example transaction in ResinAPI same as Genshin Impact
 use pixelwhiz\resinapi\ResinAPI;
 
 $resinApi = ResinAPI::getInstance();
-$resinAPI->sendInvoice($player, function(Player $player, string $resinType, int $amount) {
+$resinAPI->sendPayment($player, "Resin Payment", function(Player $player, string $resinType, int $amount) {
     $player->sendMessage("Successfully paid $amount $resinType!");
 });
 ```
@@ -145,7 +145,7 @@ public function onChestOpen(PlayerInteractEvent $event) {
     $player = $event->getPlayer();
     
     $resinApi = ResinAPI::getInstance();    
-    $resinAPI->sendInvoice($player, function(Player $player, string $type, int $amount) {
+    $resinAPI->sendPayment($player, "Resin Payment", function(Player $player, string $type, int $amount) {
         $items = [
             VanillaItems::STONE(),
             VanillaItems::DIAMOND_SWORD(),
